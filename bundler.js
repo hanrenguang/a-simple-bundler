@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const babelParser = require('@babel/parser');
 const babelTraverse = require('@babel/traverse').default;
+const babelTransformFromAstSync = require('@babel/core').transformFromAstSync;
 
 let ID = 0;
 
@@ -17,6 +18,10 @@ function createAssets(filename) {
     sourceType: 'module',
   });
 
+  const { code } = babelTransformFromAstSync(ast, content, {
+    presets: ['@babel/preset-env'],
+  });
+
   babelTraverse(ast, {
     ImportDeclaration(nodePath) {
       dependencies.push(nodePath.node.source.value);
@@ -26,6 +31,7 @@ function createAssets(filename) {
   return {
     id,
     filename,
+    code,
     dependencies,
     depIdMapping: {},
   };
@@ -72,7 +78,46 @@ function createGraph(entry) {
 function bundle() {
   const configs = JSON.parse(fs.readFileSync('bundle.config.json'));
   const graph = createGraph(configs.entry);
-  // TODO: bundle and output
+  let modules = '';
+
+  graph.forEach((mod) => {
+    const { id, code, depIdMapping } = mod;
+    modules += `${id}: [
+      function (require, module, exports) {
+        ${code}
+      },
+      ${JSON.stringify(depIdMapping)},
+    ],`;
+  });
+
+  const result = `
+(function (modules) {
+  function require(id) {
+    var fn = modules[id][0];
+    var mapping = modules[id][1];
+
+    function localRequire(relativePath) {
+      return require(mapping[relativePath]);
+    }
+
+    var module = {
+      exports: {}
+    };
+    fn(localRequire, module, module.exports);
+
+    return module.exports;
+  }
+
+  require(0);
+})({
+  ${modules}
+});
+  `;
+
+  if (!fs.existsSync('dist')) fs.mkdirSync('dist');
+  fs.writeFile('dist/bundle.js', result, 'utf8', (err) => {
+    if (err) throw err;
+  });
 }
 
 bundle();

@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "main": "bundler.js",
   "scripts": {
-    "bundle": "node bundler.js"
+    "bundle": "node bundler.js",
+    "demo": "node dist/bundle.js",
+    "start": "npm run bundle && npm run demo"
   },
   "devDependencies": {
+    "@babel/core": "^7.9.6",
     "@babel/parser": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
     "@babel/traverse": "^7.9.6"
   },
   "author": "Renguang Han",
