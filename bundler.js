@@ -14,20 +14,20 @@ function createAssets(filename) {
   const dependencies = [];
   const content = fs.readFileSync(filename, 'utf-8');
   const ast = babelParser.parse(content, {
-    sourceType: 'module'
+    sourceType: 'module',
   });
 
   babelTraverse(ast, {
-    ImportDeclaration: function(path) {
-      dependencies.push(path.node.source.value);
-    }
+    ImportDeclaration(nodePath) {
+      dependencies.push(nodePath.node.source.value);
+    },
   });
 
   return {
     id,
     filename,
     dependencies,
-    depIdMapping: {}
+    depIdMapping: {},
   };
 }
 
@@ -41,7 +41,7 @@ function createAssets(filename) {
 function addDependencies(graph, reason, deps, depIdMapping) {
   const depDirPath = path.dirname(reason);
 
-  deps.forEach(depRelativePath => {
+  deps.forEach((depRelativePath) => {
     const depPath = path.join(depDirPath, depRelativePath);
     const module = createAssets(depPath);
 
