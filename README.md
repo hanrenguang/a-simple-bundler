@@ -1,7 +1,7 @@
 # a-simple-bundler
 This is a simple JS module bundler.
 
-## Usage
+## Start
 ```bash
 $ git clone https://github.com/hanrenguang/a-simple-bundler.git
 $ cd a-simple-bundler
