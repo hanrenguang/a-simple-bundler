@@ -6,7 +6,7 @@ This is a simple JS module bundler.
 $ git clone https://github.com/hanrenguang/a-simple-bundler.git
 $ cd a-simple-bundler
 $ yarn install
-$ npm start
+$ yarn start
 ```
 
 ## References
