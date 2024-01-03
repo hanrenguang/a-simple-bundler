@@ -11,7 +11,7 @@
     "@babel/core": "^7.9.6",
     "@babel/parser": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
-    "@babel/traverse": "^7.9.6"
+    "@babel/traverse": "^7.23.2"
   },
   "author": "Renguang Han",
   "license": "MIT",
